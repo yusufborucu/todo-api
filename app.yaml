@@ -1,0 +1,25 @@
+runtime: php
+env: flex
+
+runtime_config:
+  document_root: public
+
+skip_files:
+  -.env
+
+env_variables:
+  APP_LOG: errorlog
+  APP_DEBUG: true
+  APP_KEY: base64:Xj57a5gVLlwGbLnqv/HvH+1VO/lnWDolUINEg9F9+Is=
+  STORAGE_DIR: /tmp
+  CACHE_DRIVER: database
+  SESSION_DRIVER: database
+  DB_CONNECTION: mysql
+  DB_HOST: localhost
+  DB_PORT: 3306
+  DB_DATABASE: todo
+  DB_USERNAME: todo
+  DB_PASSWORD: todo
+
+beta_settings:
+  cloud_sql_instances: "todo-api-240612:us-central1:todo"
