@@ -36,9 +36,13 @@ class TodoController extends Controller
         $doing = array();
         $done = array();
         foreach ($todos as $item) {
-            if ($item->category_id == 1) array_push($pending, $item->todo);
-            else if ($item->category_id == 2) array_push($doing, $item->todo);
-            else array_push($done, $item->todo);
+            $obj = (object)array(
+                'id' => $item->id,
+                'todo' => $item->todo
+            );
+            if ($item->category_id == 1) array_push($pending, $obj);
+            else if ($item->category_id == 2) array_push($doing, $obj);
+            else array_push($done, $obj);
         }
         $response['pendings'] = $pending;
         $response['inProgress'] = $doing;
@@ -54,22 +58,13 @@ class TodoController extends Controller
 
     public function update(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'pendings' => 'required',
-            'inProgress' => 'required',
-            'done' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['message' => 'Lütfen gerekli alanları doldurunuz.'], 400);
-        }
-
-        $todos = Todo::all();
+        $ip = request()->ip();
+        $todos = Todo::where('ip', $ip)->get();
         foreach ($todos as $item) {
             $item->delete();
         }
 
         $input = $request->all();
-        $ip = request()->ip();
 
         $pendings = $input['pendings'];
         $inProgress = $input['inProgress'];
@@ -77,21 +72,21 @@ class TodoController extends Controller
         foreach ($pendings as $item) {
             $todo = new Todo;
             $todo->ip = $ip;
-            $todo->todo = $item;
+            $todo->todo = $item['todo'];
             $todo->category_id = 1;
             $todo->save();
         }
         foreach ($inProgress as $item) {
             $todo = new Todo;
             $todo->ip = $ip;
-            $todo->todo = $item;
+            $todo->todo = $item['todo'];
             $todo->category_id = 2;
             $todo->save();
         }
         foreach ($done as $item) {
             $todo = new Todo;
             $todo->ip = $ip;
-            $todo->todo = $item;
+            $todo->todo = $item['todo'];
             $todo->category_id = 3;
             $todo->save();
         }
